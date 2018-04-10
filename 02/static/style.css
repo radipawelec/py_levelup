@@ -1,0 +1,14 @@
+body { 
+	background-color: #F9F9F9;
+}
+
+.bgImgCenter {
+	padding-top: 50px;
+	text-align: center;
+	align-content: center;}
+
+
+img {
+	-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+	filter: grayscale(100%);
+}
