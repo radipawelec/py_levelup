@@ -8,14 +8,13 @@ from flask import (
 from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, Index, Integer, LargeBinary, Numeric, \
     SmallInteger, String, Table, Text, text
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.sqltypes import NullType
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import sessionmaker, class_mapper
 from sqlalchemy import create_engine
 from datetime import datetime
-import uuid
 
-engine = create_engine('postgres://nrhrgkdolvosii:8fd7b44ae8d287dd52f01762c1b91290572540c46967aafd749e4a636e2d29a5@ec2-54-246-84-200.eu-west-1.compute.amazonaws.com:5432/d8g9osslceaoai')
+engine = create_engine(
+    'postgres://nrhrgkdolvosii:8fd7b44ae8d287dd52f01762c1b91290572540c46967aafd749e4a636e2d29a5@ec2-54-246-84-200.eu-west-1.compute.amazonaws.com:5432/d8g9osslceaoai')
 
 # engine = create_engine('sqlite:///database.db')
 Session = sessionmaker(bind=engine)
@@ -26,8 +25,6 @@ metadata = Base.metadata
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = True
-
-
 
 
 class City(Base):
@@ -63,6 +60,7 @@ class Country(Base):
 def home():
     return 'Hello'
 
+
 @app.route('/counter')
 def counter():
     c = session.query(Count).with_for_update().filter(Count.count_id == 0).first()
@@ -73,6 +71,7 @@ def counter():
 
     return r
 
+
 @app.route('/cities', methods=['GET', 'POST'])
 def city_list():
     country_name_query_string = request.args.get('country_name')
@@ -81,7 +80,7 @@ def city_list():
     real_offset = None
 
     if request.method == 'POST':
-            return post_city()
+        return post_city()
 
     if per_page is not None and per_page.isnumeric():
         int(per_page)
@@ -114,6 +113,7 @@ def city_list():
             data_json.extend(list(i))
         return jsonify(data_json)
 
+
 def post_city():
     jsondata = request.get_json()
 
@@ -132,10 +132,10 @@ def post_city():
 
     if country_id in keys_country:
         new_entry = City(
-            city_id = b ,
-            country_id = country_id,
-            city = city_name,
-            last_update = date
+            city_id=b,
+            country_id=country_id,
+            city=city_name,
+            last_update=date
         )
         session.add(new_entry)
         session.commit()
@@ -143,11 +143,12 @@ def post_city():
         c = session.query(City).filter(City.city == city_name).first()
         r = '{}'.format(c.city_id)
 
-        jsondata = {"country_id":country_id, "city_name":city_name, "city_id":b}
+        jsondata = {"country_id": country_id, "city_name": city_name, "city_id": b}
         return make_response(jsonify(jsondata), 200)
     else:
         error_msg = {"error": "Invalid country_id"}
         return make_response(jsonify(error_msg), 400)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
